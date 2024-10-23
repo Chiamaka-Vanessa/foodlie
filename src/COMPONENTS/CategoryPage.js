@@ -18,12 +18,18 @@ const CategoryPage = () => {
   }, [categoryName]);
 
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7 my-10">
       {meals.map((meal) => (
         <div key={meal.idMeal} className="meal-item">
           <Link to={`/meal/${meal.idMeal}`}>
-            <img src={meal.strMealThumb} alt={meal.strMeal} className="w-64 h-64" />
-            <h3>{meal.strMeal}</h3>
+            <img
+              src={meal.strMealThumb}
+              alt={meal.strMeal}
+              className="w-48 h-48 object-cover rounded-lg shadow-md mx-auto"
+            />
+            <h3 className="text-center text-lg font-semibold mt-4">
+              {meal.strMeal}
+            </h3>
           </Link>
         </div>
       ))}

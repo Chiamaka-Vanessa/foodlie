@@ -1,48 +1,65 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-const MealDetailsPage = () => {
-  const { mealId } = useParams();  // Get the mealId from the URL
-  const [meal, setMeal] = useState(null);  // State to hold the meal details
+const MealDetailsPage = ({ addToCart }) => {
+  const { mealId } = useParams();
+  const [meal, setMeal] = useState(null);
 
-  // Fetch meal details when component loads
   useEffect(() => {
     const fetchMealDetails = async () => {
-      try {
-        const response = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`);
-        const data = await response.json();
-        setMeal(data.meals[0]);  // Set the first meal object (the API returns an array)
-      } catch (error) {
-        console.error("Error fetching meal details:", error);
-      }
+      const response = await fetch(
+        `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`
+      );
+      const data = await response.json();
+      setMeal(data.meals[0]);
     };
 
     fetchMealDetails();
-  }, [mealId]);  // Re-run when mealId changes
+  }, [mealId]);
 
-  if (!meal) {
-    return <p>Loading...</p>;
-  }
+  // Helper function to get ingredients and measurements
+  const getIngredients = (meal) => {
+    const ingredients = [];
+    for (let i = 1; i <= 20; i++) {
+      const ingredient = meal[`strIngredient${i}`];
+      const measure = meal[`strMeasure${i}`];
+      if (ingredient && ingredient.trim()) {
+        ingredients.push(`${measure} ${ingredient}`);
+      }
+    }
+    return ingredients;
+  };
+
+  if (!meal) return <p>Loading...</p>;
+
+  const ingredients = getIngredients(meal); // Get the ingredients from the meal
 
   return (
-    <div className="meal-details">
-      <h2 className="text-3xl font-bold my-4">{meal.strMeal}</h2>
-      <img src={meal.strMealThumb} alt={meal.strMeal} className="w-96 my-4" />
-      <p className="text-lg">{meal.strInstructions}</p>
-      <ul className="my-4">
-        <h3 className="text-2xl font-bold">Ingredients:</h3>
-        {Array.from({ length: 20 }).map((_, index) => {
-          const ingredient = meal[`strIngredient${index + 1}`];
-          const measure = meal[`strMeasure${index + 1}`];
-          return (
-            ingredient && (
-              <li key={index}>
-                {ingredient} - {measure}
-              </li>
-            )
-          );
-        })}
+    <div className="meal-details p-4">
+      <h1 className="text-3xl font-bold">{meal.strMeal}</h1>
+      <img
+  src={meal.strMealThumb}
+  alt={meal.strMeal}
+  className="my-4 rounded-lg shadow-md max-w-xs w-full drop-shadow-sm drop-shadow-[0_80px_30px_#0007] "
+/>
+
+      <p className="text-lg mb-4">{meal.strInstructions}</p>
+
+      {/* Display ingredients */}
+      <h2 className="text-2xl font-semibold mb-3">Ingredients:</h2>
+      <ul className="list-disc list-inside">
+        {ingredients.map((ingredient, index) => (
+          <li key={index}>{ingredient}</li>
+        ))}
       </ul>
+
+      {/* Add to Cart Button */}
+      <button
+        onClick={() => addToCart(mealId)}
+        className="bg-blue-500 text-white py-2 px-4 rounded-md mt-6 hover:bg-yellow-300"
+      >
+        Add to Cart
+      </button>
     </div>
   );
 };

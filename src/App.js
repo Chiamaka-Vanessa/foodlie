@@ -39,61 +39,69 @@
 // export default App
 import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-
-// Import all the components
-import Navbar from "./COMPONENTS/Navbar";
 import HomePage from "./COMPONENTS/HomePage";
 import CategoryPage from "./COMPONENTS/CategoryPage";
 import MealDetailsPage from "./COMPONENTS/Meal Details Page";
 import Cart from "./COMPONENTS/Cart";
-import OrderForm from "./COMPONENTS/OrderForm";
+import Navbar from "./COMPONENTS/Navbar";
 
-function App() {
-  // State to hold cart items
+
+const App = () => {
   const [cartItems, setCartItems] = useState([]);
 
-  // Function to add items to cart
-  // const addToCart = (meal) => {
-  //   setCartItems((prevItems) => [...prevItems, meal]);
-  // };
-
-  // Function to remove items from cart
-  const removeFromCart = (mealId) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.idMeal !== mealId));
+  // Add meal to cart or update quantity if already in the cart
+  const addToCart = (meal) => {
+    const existingItem = cartItems.find((item) => item.idMeal === meal.idMeal);
+    if (existingItem) {
+      setCartItems(
+        cartItems.map((item) =>
+          item.idMeal === meal.idMeal
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+      );
+    } else {
+      setCartItems([...cartItems, { ...meal, quantity: 1 }]);
+    }
   };
 
-  // Function to handle order submission (e.g., send order to backend)
-  const submitOrder = (formData) => {
-    console.log("Order Submitted", formData, cartItems);
-    // Reset cart after order submission
-    setCartItems([]);
-    alert("Order placed successfully!");
+  // Remove meal from the cart
+  const removeFromCart = (idMeal) => {
+    setCartItems(cartItems.filter((item) => item.idMeal !== idMeal));
+  };
+
+  // Update the quantity of a meal in the cart
+  const updateCartItemQuantity = (idMeal, newQuantity) => {
+    setCartItems(
+      cartItems.map((item) =>
+        item.idMeal === idMeal ? { ...item, quantity: newQuantity } : item
+      )
+    );
   };
 
   return (
     <Router>
-      <Navbar/>
-      <div>
-        <Routes>
-          {/* HomePage - Display Meal Categories */}
-          <Route path="/" element={<HomePage />} />
-
-          {/* CategoryPage - Show meals under a specific category */}
-          <Route path="/category/:categoryName" element={<CategoryPage />} />
-
-          {/* MealDetailsPage - Show details for a specific meal */}
-          <Route path="/meal/:mealId" element={<MealDetailsPage />} />
-
-
-          {/* Cart - Show items in the cart and allow removal */}
-          <Route path="/cart" element={<Cart cartItems={cartItems} removeFromCart={removeFromCart} />} />
-
-          {/* OrderForm - Checkout page */}
-          <Route path="/checkout" element={<OrderForm cartItems={cartItems} submitOrder={submitOrder} />} />
-        </Routes>
-      </div>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/category/:categoryName" element={<CategoryPage />} />
+        <Route
+          path="/meal/:mealId"
+          element={<MealDetailsPage addToCart={addToCart} />} />
+        <Route
+          path="/cart"
+          element={
+            <Cart
+              cartItems={cartItems}
+              removeFromCart={removeFromCart}
+              updateCartItemQuantity={updateCartItemQuantity}
+            />
+          }
+        />
+      </Routes>
     </Router>
   );
-}
+};
 
 export default App;
+

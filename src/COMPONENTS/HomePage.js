@@ -29,7 +29,7 @@ const HomePage = () => {
               alt={category.strCategory}
               className="w-40 h-40 object-cover mb-4"
             />
-            <p className="text-lg font-bold text-gray-800 text-center mb-2">
+            <p className="text-lg font-bold text-gray-800 text-center mb-10">
               {category.strCategory}
             </p>
             <p className="text-gray-600 text-sm text-center mb-4">

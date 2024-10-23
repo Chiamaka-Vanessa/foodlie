@@ -1,37 +1,54 @@
-const Cart = ({ cartItems, removeFromCart }) => {
-    const totalPrice = cartItems.reduce((total, item) => total + parseFloat(item.price || 10), 0); // Assuming price for each item is 10
-  
-    return (
-      <div className="container mx-auto my-10">
-        <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
-        {cartItems.length === 0 ? (
-          <p>Your cart is empty.</p>
-        ) : (
-          <div>
-            <ul>
-              {cartItems.map((item) => (
-                <li key={item.idMeal} className="flex justify-between items-center border-b py-4">
-                  <p>{item.strMeal}</p>
-                  <button
-                    onClick={() => removeFromCart(item.idMeal)}
-                    className="bg-red-500 text-white py-1 px-2 rounded-md"
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-8">
-              <p className="text-xl font-bold">Total: ${totalPrice.toFixed(2)}</p>
-              <button className="bg-green-500 text-white font-bold py-2 px-4 rounded-md hover:bg-green-600 transition-colors duration-300 mt-4">
-                Proceed to Checkout
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+import { useState } from "react";
+import Cart from "./Cart"; // Adjust the path as needed
+
+const ATC = () => {
+  const [cartItems, setCartItems] = useState([]);
+
+  const addToCart = (meal) => {
+    const existingItem = cartItems.find((item) => item.idMeal === meal.idMeal);
+    if (existingItem) {
+      // If item already in cart, increase quantity
+      setCartItems(
+        cartItems.map((item) =>
+          item.idMeal === meal.idMeal
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+      );
+    } else {
+      // If item not in cart, add with quantity 1
+      setCartItems([...cartItems, { ...meal, quantity: 1 }]);
+    }
+  };
+
+  const removeFromCart = (idMeal) => {
+    setCartItems(cartItems.filter((item) => item.idMeal !== idMeal));
+  };
+
+  const updateCartItemQuantity = (idMeal, newQuantity) => {
+    setCartItems(
+      cartItems.map((item) =>
+        item.idMeal === idMeal ? { ...item, quantity: newQuantity } : item
+      )
     );
   };
-  
-  export default Cart;
-  
+
+  return (
+    <div>
+      {/* Render Cart component */}
+      <Cart
+        cartItems={cartItems}
+        removeFromCart={removeFromCart}
+        updateCartItemQuantity={updateCartItemQuantity}
+      />
+
+      {/* Add to Cart logic can go into the Meal list or details page */}
+      {/* Example button to add to cart (you will replace with actual meal data) */}
+      <button onClick={() => addToCart({ idMeal: "52772", strMeal: "Pizza", price: 10 })}>
+        Add Pizza to Cart
+      </button>
+    </div>
+  );
+};
+
+export default ATC;
