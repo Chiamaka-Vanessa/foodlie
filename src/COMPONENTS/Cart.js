@@ -1,54 +1,67 @@
-import { useState } from "react";
-import Cart from "./Cart"; // Adjust the path as needed
+// src/components/Cart.jsx
+// src/components/Cart.jsx
+// src/components/Cart.jsx
+import React from 'react';
 
-const ATC = () => {
-  const [cartItems, setCartItems] = useState([]);
-
-  const addToCart = (meal) => {
-    const existingItem = cartItems.find((item) => item.idMeal === meal.idMeal);
-    if (existingItem) {
-      // If item already in cart, increase quantity
-      setCartItems(
-        cartItems.map((item) =>
-          item.idMeal === meal.idMeal
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      );
-    } else {
-      // If item not in cart, add with quantity 1
-      setCartItems([...cartItems, { ...meal, quantity: 1 }]);
-    }
-  };
-
-  const removeFromCart = (idMeal) => {
-    setCartItems(cartItems.filter((item) => item.idMeal !== idMeal));
-  };
-
-  const updateCartItemQuantity = (idMeal, newQuantity) => {
-    setCartItems(
-      cartItems.map((item) =>
-        item.idMeal === idMeal ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
+const Cart = ({ cartItems, removeFromCart, updateCartItemQuantity }) => {
+  // Calculate total price directly in the Cart component
+  const totalPrice = cartItems.reduce((total, item) => {
+    const price = Number(item.price);
+    const quantity = Number(item.quantity);
+    return total + (isNaN(price) ? 0 : price) * (isNaN(quantity) ? 0 : quantity);
+  }, 0);
 
   return (
-    <div>
-      {/* Render Cart component */}
-      <Cart
-        cartItems={cartItems}
-        removeFromCart={removeFromCart}
-        updateCartItemQuantity={updateCartItemQuantity}
-      />
-
-      {/* Add to Cart logic can go into the Meal list or details page */}
-      {/* Example button to add to cart (you will replace with actual meal data) */}
-      <button onClick={() => addToCart({ idMeal: "52772", strMeal: "Pizza", price: 10 })}>
-        Add Pizza to Cart
-      </button>
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Shopping Cart</h2>
+      {cartItems.length === 0 ? (
+        <p>Your cart is empty</p>
+      ) : (
+        <>
+          <ul className="space-y-4">
+            {cartItems.map((item) => (
+              <li key={item.idMeal} className="flex justify-between items-center border-b pb-2">
+                <div className="flex items-center space-x-4">
+                  <img
+                    src={item.strMealThumb}
+                    alt={item.strMeal}
+                    className="w-16 h-16 object-cover rounded-md"
+                  />
+                  <span className="text-lg font-semibold">{item.strMeal}</span>
+                  <span className="text-lg font-semibold">Price: ${item.price}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => updateCartItemQuantity(item.idMeal, item.quantity - 1)}
+                    disabled={item.quantity === 1}
+                    className="bg-blue-900 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                  >
+                    -
+                  </button>
+                  <span className="text-lg">{item.quantity}</span>
+                  <button
+                    onClick={() => updateCartItemQuantity(item.idMeal, item.quantity + 1)}
+                    className="bg-green-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                  >
+                    +
+                  </button>
+                  <button
+                    onClick={() => removeFromCart(item.idMeal)}
+                    className="bg-blue-900 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-4 font-bold">
+            Total: ${totalPrice} {/* Directly display the calculated total price */}
+          </div>
+        </>
+      )}
     </div>
   );
 };
 
-export default ATC;
+export default Cart;

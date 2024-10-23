@@ -42,14 +42,16 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import HomePage from "./COMPONENTS/HomePage";
 import CategoryPage from "./COMPONENTS/CategoryPage";
 import MealDetailsPage from "./COMPONENTS/Meal Details Page";
+import ATC from "./COMPONENTS/ATC";
 import Cart from "./COMPONENTS/Cart";
 import Navbar from "./COMPONENTS/Navbar";
+import Footer from "./COMPONENTS/Footer";
 
 
 const App = () => {
   const [cartItems, setCartItems] = useState([]);
 
-  // Add meal to cart or update quantity if already in the cart
+  const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
   const addToCart = (meal) => {
     const existingItem = cartItems.find((item) => item.idMeal === meal.idMeal);
     if (existingItem) {
@@ -65,12 +67,10 @@ const App = () => {
     }
   };
 
-  // Remove meal from the cart
   const removeFromCart = (idMeal) => {
     setCartItems(cartItems.filter((item) => item.idMeal !== idMeal));
   };
 
-  // Update the quantity of a meal in the cart
   const updateCartItemQuantity = (idMeal, newQuantity) => {
     setCartItems(
       cartItems.map((item) =>
@@ -81,13 +81,15 @@ const App = () => {
 
   return (
     <Router>
-      <Navbar />
+        <Navbar cartItemCount={cartItemCount} />
+        
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/category/:categoryName" element={<CategoryPage />} />
         <Route
           path="/meal/:mealId"
-          element={<MealDetailsPage addToCart={addToCart} />} />
+          element={<MealDetailsPage addToCart={addToCart} />}
+        />
         <Route
           path="/cart"
           element={
@@ -98,10 +100,16 @@ const App = () => {
             />
           }
         />
+        {/* Add a route to use the ATC component, if needed */}
+        <Route
+          path="/add-to-cart"
+          element={<ATC addToCart={addToCart} />}
+        />
+           
       </Routes>
+      <Footer/>
     </Router>
   );
 };
 
 export default App;
-

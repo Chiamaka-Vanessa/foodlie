@@ -22,7 +22,7 @@ const HomePage = () => {
           <Link
             key={category.idCategory}
             to={`/category/${category.strCategory}`}
-            className="flex flex-col items-center bg-white shadow-lg rounded-lg p-5 hover:shadow-2xl transition-shadow duration-300"
+            className="flex flex-col items-center bg-white shadow-lg rounded-lg p-5 hover:shadow-2xl "
           >
             <img
               src={category.strCategoryThumb}
