@@ -12,7 +12,7 @@ const HomePage = () => {
     };
 
     fetchCategories();
-  }, []);
+  }, [categories]);
 
   return (
     <div className="container mx-auto my-10">
